@@ -173,41 +173,40 @@ GigVault is designed to withstand large-scale coordinated fraud attacks, such as
 ### 🎯 Threat Scenario: Market Crash
 A coordinated group of 500 riders spoof their GPS locations during a disruption (e.g., heavy rain) to trigger false payouts simultaneously, draining the system.
 
----
+
 
 ## 🛡️ Multi-Layer Defense Architecture
 
 GigVault uses a defense-in-depth strategy combining behavioral, spatial, and temporal validation.
 
----
+
 
 ### 1. 📍 Multi-Signal Location Verification
 - GPS + device motion patterns
 - Location consistency over time
 - Speed validation (reject impossible movement)
 
----
+
 
 ### 2. 🧠 Behavioral Pattern Analysis
 - Typical working hours
 - Order frequency
 - Sudden abnormal activity detection
 
----
+
 
 ### 3. 🌐 Cluster & Network Detection
 - Multiple riders from same coordinates
 - Simultaneous claims
 - Group anomaly detection
 
----
+
 
 ### 4. ⏱️ Temporal Validation
 - Was rider active before trigger?
 - Did activity drop during disruption?
 - Did activity resume after?
 
----
 
 ### 5. 📊 Risk Scoring Engine
 Each claim gets a fraud score:
@@ -215,14 +214,14 @@ Each claim gets a fraud score:
 - Medium → delayed  
 - High → blocked  
 
----
+
 
 ### 6. ⚖️ Fairness Layer
 - First-time anomalies not blocked  
 - Partial payouts for uncertain cases  
 - Manual review fallback  
 
----
+
 
 ### 📌 Example Detection
 500 riders claim rain payout:
