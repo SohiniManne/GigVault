@@ -122,6 +122,8 @@ Ravi (Bangalore, high-risk zone, monsoon week)
 | Curfew   | Official notice | Full payout   | Total shutdown         |
 | Outage   | >45 mins        | ₹100/30 min   | Hidden income loss     |
 
+App outages are detected using platform uptime monitoring signals, such as API response failures, third-party status tracking services, or simulated downtime thresholds.
+
 ---
 
 ### 📌 Example Claim Flow
@@ -155,6 +157,8 @@ GigVault uses AI for real-time risk prediction, pricing, and fraud detection.
 * Duplicate claim prevention
 * Anomaly detection (>80% claim frequency)
 
+Fraud detection models are continuously evaluated against historical claim patterns to improve accuracy and reduce false positives.
+
 📌 Example:
 Rider offline during rain → ❌ Claim rejected
 GPS mismatch → 🚨 Flagged
@@ -168,6 +172,8 @@ GPS mismatch → 🚨 Flagged
 * Predictive alerts for disruptions
 
 The model continuously updates premiums based on rolling disruption data and rider behavior, enabling adaptive risk pricing over time.
+
+The model is trained on historical weather patterns and simulated rider activity datasets, and is retrained weekly to adapt to changing risk conditions.
 
 ---
 ## 🚨 Adversarial Defense & Anti-Spoofing Strategy
@@ -246,6 +252,15 @@ To ensure system stability under a Market Crash scenario:
 - High-risk clusters are temporarily isolated to prevent cascading payouts  
 
 This ensures the platform remains financially and operationally stable even under coordinated attacks.
+
+## 📌 Example Fairness Logic:
+A rider with 6 weeks of consistent activity and no prior fraud signals claims during a verified rain event.
+
+Even if 200+ riders in the same zone are flagged as a cluster, this rider is:
+- Auto-approved due to strong historical trust score  
+- Not penalized by cluster-level suspicion  
+
+This ensures genuine users are protected while fraud rings are isolated.
 
 ---
 
@@ -357,10 +372,13 @@ uvicorn main:app --reload
 
 ## 💼 Business Model
 
-* Revenue: Weekly premiums
-* Cost: Payouts
-* Profit: Risk-adjusted margin
-* Scale: Partnerships with platforms
+- Revenue: Weekly premiums  
+- Cost: Payouts  
+- Target Loss Ratio: 60–65%  
+- Profit: Risk-adjusted margin  
+- Scale: Partnerships with platforms  
+
+At scale, profitability is achieved through diversified risk pools across zones and rider segments.
 
 ---
 
