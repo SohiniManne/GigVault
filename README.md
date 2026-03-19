@@ -235,6 +235,20 @@ Each claim gets a fraud score:
 
 👉 Result: Fraud ring blocked
 
+## 🧱 System Stability Under Attack
+GigVault is designed to handle sudden spikes in claim requests during disruption events.
+
+To ensure system stability under a Market Crash scenario:
+
+- Claim processing is rate-limited and queued to prevent system overload  
+- Risk scoring is applied before payout execution to filter high-risk claims early  
+- Batch validation is used for simultaneous claims in the same zone  
+- High-risk clusters are temporarily isolated to prevent cascading payouts  
+
+This ensures the platform remains financially and operationally stable even under coordinated attacks.
+
+---
+
 ## 🧩 System Architecture
 
 GigVault operates as a real-time event-driven system:
