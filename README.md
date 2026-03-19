@@ -16,6 +16,8 @@ GigVault is an AI-powered parametric insurance platform that protects the income
 
 India's Q-Commerce delivery partners (Zepto, Blinkit, Swish) operate in a high-pressure, hyper-local model with **zero income protection**.
 
+Riders depend on daily earnings with no savings buffer, making even short disruptions financially critical.
+
 When disruptions occur:
 
 * 🌧️ Heavy rain → orders drop instantly
@@ -144,7 +146,7 @@ GigVault uses AI for real-time risk prediction, pricing, and fraud detection.
 
 👉 Retrained weekly using latest data
 
----
+
 
 ### 2. Fraud Detection Engine
 
@@ -157,13 +159,15 @@ GigVault uses AI for real-time risk prediction, pricing, and fraud detection.
 Rider offline during rain → ❌ Claim rejected
 GPS mismatch → 🚨 Flagged
 
----
+
 
 ### 3. Risk Profiling
 
 * Zone Risk Score (ZRS) at onboarding
 * Updated weekly
 * Predictive alerts for disruptions
+
+The model continuously updates premiums based on rolling disruption data and rider behavior, enabling adaptive risk pricing over time.
 
 ---
 ## 🚨 Adversarial Defense & Anti-Spoofing Strategy
@@ -173,7 +177,7 @@ GigVault is designed to withstand large-scale coordinated fraud attacks, such as
 ### 🎯 Threat Scenario: Market Crash
 A coordinated group of 500 riders spoof their GPS locations during a disruption (e.g., heavy rain) to trigger false payouts simultaneously, draining the system.
 
-
+GigVault is designed to remain stable even under coordinated attack scenarios, preventing large-scale payout draining.
 
 ## 🛡️ Multi-Layer Defense Architecture
 
@@ -242,6 +246,8 @@ GigVault operates as a real-time event-driven system:
 * **Trigger Engine:** API polling + scheduler
 * **APIs:** Weather, AQI
 * **Payments:** Razorpay (test mode)
+
+The system operates as an event-driven pipeline where external API signals trigger validation and payout workflows in real-time.
 
 ---
 
@@ -329,7 +335,7 @@ uvicorn main:app --reload
 
 ## 🎥 Demo
 
-* Phase 1: Strategy Video (Coming Soon)
+* Phase 1: Strategy Video (https://www.youtube.com/watch?v=Ne7Pmxbulxg)
 * Phase 2: Prototype Demo
 * Phase 3: Full Simulation
 
