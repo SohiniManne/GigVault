@@ -260,6 +260,10 @@ A consistent rider is approved instantly, even if part of a flagged cluster.
 - Trigger Engine: API polling + scheduler  
 - Payments: Razorpay (test mode)  
 
+![GigVault Architecture](./docs/architecture.png)
+
+> Event-driven, fraud-resilient pipeline designed for real-time parametric insurance.
+
 ---
 
 ## 📊 Analytics Dashboard
