@@ -260,6 +260,10 @@ A consistent rider is approved instantly, even if part of a flagged cluster.
 - Trigger Engine: API polling + scheduler  
 - Payments: Razorpay (test mode)  
 
+![GigVault Architecture](./docs/ArchitectureDiagram.png)
+
+> Event-driven, fraud-resilient pipeline designed for real-time parametric insurance.
+
 ---
 
 ## 📊 Analytics Dashboard
@@ -337,6 +341,8 @@ npm run dev
 
 ```bash
 cd backend
+python -m venv venv
+source venv\Scripts\activate (Windows)
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
