@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function App() {
   const [result, setResult] = useState("");
+
+  useEffect(() => {
+    fetch("https://gigvault.onrender.com/docs")
+      .then(() => console.log("Server warmed"))
+      .catch(() => console.log("Waking server..."));
+  }, []);
 
   const simulateRain = async () => {
     const res = await fetch("https://gigvault.onrender.com/simulate-trigger", {
@@ -33,6 +39,14 @@ export default function App() {
     setResult(data.message);
   };
 
+  const wakeServer = async () => {
+    setResult("⚡ Waking server... please wait ⏳");
+
+    await fetch("https://gigvault.onrender.com/docs");
+
+    setResult("✅ Server ready! Now run the demo");
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -58,6 +72,9 @@ export default function App() {
         <button onClick={getPremium} style={btn}>
           💰 Get Premium
         </button>
+        <button onClick={wakeServer} style={btn}>
+          ⚡ Wake Server
+        </button>
       </div>
 
       <div style={{
@@ -67,7 +84,9 @@ export default function App() {
         minWidth: "300px",
         textAlign: "center"
       }}>
-        <h2>{result || "Run a simulation to see results..."}</h2>
+        <h2>
+          {result || "⚡ Initializing system... (first request may take a few seconds)"}
+        </h2>
       </div>
     </div>
   );
