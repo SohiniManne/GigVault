@@ -4,7 +4,7 @@ export default function App() {
   const [result, setResult] = useState("");
 
   const simulateRain = async () => {
-    const res = await fetch("http://127.0.0.1:8000/simulate-trigger", {
+    const res = await fetch("https://gigvault.onrender.com/simulate-trigger", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ event: "rain" })
@@ -14,7 +14,7 @@ export default function App() {
   };
 
   const checkFraud = async () => {
-    const res = await fetch("http://127.0.0.1:8000/check-fraud", {
+    const res = await fetch("https://gigvault.onrender.com/check-fraud", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ gps: "Bangalore", ip: "Delhi" })
@@ -24,7 +24,7 @@ export default function App() {
   };
 
   const getPremium = async () => {
-    const res = await fetch("http://127.0.0.1:8000/get-premium", {
+    const res = await fetch("https://gigvault.onrender.com/get-premium", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ city: "Bangalore", risk: "high" })
