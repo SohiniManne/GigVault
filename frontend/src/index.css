@@ -1,0 +1,22 @@
+:root {
+  color-scheme: dark;
+  font-family: "DM Sans", system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background: #070b12;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(1200px 600px at 10% -10%, #1a237e55, transparent),
+    radial-gradient(900px 500px at 100% 0%, #004d4055, transparent), #070b12;
+}
+
+#root {
+  min-height: 100vh;
+}
