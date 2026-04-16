@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     )
 
     openweather_api_key: str = ""
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173,https://gig-vault.vercel.app"
     firebase_credentials_path: str = ""
     firebase_credentials_json: str = ""
     port: int = 8000
