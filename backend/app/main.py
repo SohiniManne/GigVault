@@ -18,14 +18,14 @@ logger = logging.getLogger("gigvault")
 app = FastAPI(title="GigVault API", version="1.0.0")
 
 settings = get_settings()
+print("🔥 ACTIVE CORS:", settings.cors_origin_list)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origin_list,
+    allow_origins=["*"],  # 🔥 FORCE ALLOW EVERYTHING
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(auto_claim.router)
 app.include_router(weather.router)
 app.include_router(fraud_score.router)
