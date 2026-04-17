@@ -3,18 +3,28 @@
  */
 const base = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/$/, "");
 
+/**
+ * Smart fetch:
+ * - NO Content-Type for GET (avoids CORS preflight)
+ * - Adds Content-Type only for POST/PUT/PATCH
+ */
 async function jsonFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const method = init?.method ?? "GET";
+  const isBodyRequest = method !== "GET";
+
   const res = await fetch(`${base}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(isBodyRequest ? { "Content-Type": "application/json" } : {}),
       ...(init?.headers ?? {}),
     },
   });
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || res.statusText);
   }
+
   return res.json() as Promise<T>;
 }
 
@@ -108,6 +118,8 @@ export type VerificationStatusResponse = {
   model_artifact: string;
 };
 
+/* ================= API CALLS ================= */
+
 export function postAutoClaim(body: {
   user_id: string;
   lat?: number | null;
@@ -121,7 +133,11 @@ export function postAutoClaim(body: {
   });
 }
 
-export function postWeather(body: { lat?: number | null; lon?: number | null; city?: string | null }) {
+export function postWeather(body: {
+  lat?: number | null;
+  lon?: number | null;
+  city?: string | null;
+}) {
   return jsonFetch<WeatherPayload>("/weather", {
     method: "POST",
     body: JSON.stringify(body),
@@ -153,7 +169,11 @@ export function postPremium(userId: string) {
   });
 }
 
-export function postCreateOrder(body: { user_id: string; plan: "basic" | "pro" | "elite"; amount: number }) {
+export function postCreateOrder(body: {
+  user_id: string;
+  plan: "basic" | "pro" | "elite";
+  amount: number;
+}) {
   return jsonFetch<CreateOrderResponse>("/create-order", {
     method: "POST",
     body: JSON.stringify(body),
