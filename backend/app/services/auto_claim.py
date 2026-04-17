@@ -204,10 +204,6 @@ async def run_auto_claim(
 # ================= PREVIEW FRAUD =================
 
 async def preview_fraud_context(user_id: str, lat: float, lon: float):
-    """
-    Lightweight preview for fraud scoring (used by fraud_score router)
-    """
-
     user = get_user(user_id) or {}
 
     locs = list(user.get("locations", []))
