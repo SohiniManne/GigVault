@@ -28,16 +28,49 @@ export function Signup() {
       return;
     }
     setLoading(true);
-    try {
-      const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      if (name.trim()) {
-        await updateProfile(credential.user, { displayName: name.trim() });
-      }
-      setUserId(credential.user.uid);
-      nav("/profile");
-    } catch (error) {
-      setErr(error instanceof Error ? error.message : "Signup failed");
-    } finally {
+   try {
+  const credential = await createUserWithEmailAndPassword(
+    auth,
+    email.trim(),
+    password
+  );
+
+  const user = credential.user;
+
+  // ✅ Update Firebase display name
+  if (name.trim()) {
+    await updateProfile(user, { displayName: name.trim() });
+  }
+
+  // 🔥🔥 CRITICAL: SAVE USER TO BACKEND
+  await fetch("https://gigvault-backend.onrender.com/user-profile", {
+    method: "PUT", // matches your backend
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: user.uid,
+      name: name.trim(),
+      email: email.trim(),
+      company: "",
+      is_online: false,
+      location: {
+        lat: null,
+        lon: null,
+        city: "",
+      },
+    }),
+  });
+
+  // ✅ Store user locally
+  setUserId(user.uid);
+
+  // ✅ Redirect
+  nav("/profile");
+
+} catch (error) {
+  setErr(error instanceof Error ? error.message : "Signup failed");
+} finally {
       setLoading(false);
     }
   };
