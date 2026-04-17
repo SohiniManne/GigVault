@@ -6,6 +6,9 @@
 
 ---
 
+Pitch Deck :
+https://docs.google.com/presentation/d/1N7qKWvTiJXn7hevrXOOEKEFVbFuFjtcA/edit?usp=sharing&ouid=104185135030531913050&rtpof=true&sd=true
+
 ## 🌍 Problem Statement
 
 India’s gig workers lose **20–30% of income** due to external disruptions like weather, pollution, and curfews. 
