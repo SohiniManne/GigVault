@@ -102,7 +102,7 @@ def verify_payment(body: VerifyPaymentRequest) -> PolicyPayload:
         raise HTTPException(status_code=500, detail="Razorpay key secret is not configured on server")
 
     user = get_user(body.user_id)
-    existing = user.get("policy")
+    existing = user.get("premium")
     if isinstance(existing, dict) and existing.get("status") == "active":
         return PolicyPayload(**existing)
 
@@ -119,11 +119,12 @@ def verify_payment(body: VerifyPaymentRequest) -> PolicyPayload:
 
     plans = compute_plans(body.user_id)
     premium = float(plans.get(body.plan, 0.0))
-    policy = {
-        "plan": body.plan,
-        "premium": round(premium, 2),
-        "status": "active",
-        "created_at": time.time(),
-    }
-    save_user(body.user_id, {"policy": policy})
+    premium_data = {
+    "plan": body.plan,
+    "paid_amount": round(premium, 2),
+    "status": "active",
+    "start_date": time.time(),
+}
+
+save_user(body.user_id, {"premium": premium_data})
     return PolicyPayload(**policy)
