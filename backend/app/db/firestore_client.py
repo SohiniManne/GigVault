@@ -67,3 +67,32 @@ def record_claim_event(user_id: str, lat, lon, **kwargs):
         "lon": lon,
         **kwargs
     })
+# ================= FRAUD SUPPORT =================
+
+def fetch_recent_claim_events(limit: int = 20):
+    try:
+        docs = (
+            db.collection("claims")
+            .order_by("timestamp", direction=firestore.Query.DESCENDING)
+            .limit(limit)
+            .stream()
+        )
+        return [doc.to_dict() for doc in docs]
+    except Exception as e:
+        print("⚠️ fetch_recent_claim_events error:", e)
+        return []
+
+
+def recent_user_claim_timestamps(user_id: str, limit: int = 10):
+    try:
+        docs = (
+            db.collection("claims")
+            .where("user_id", "==", user_id)
+            .order_by("timestamp", direction=firestore.Query.DESCENDING)
+            .limit(limit)
+            .stream()
+        )
+        return [doc.to_dict().get("timestamp") for doc in docs]
+    except Exception as e:
+        print("⚠️ recent_user_claim_timestamps error:", e)
+        return []
