@@ -201,3 +201,32 @@ async def run_auto_claim(
         worker_online_at_disruption=worker_online,
         worker_status_note=worker_status_note,
     )
+# ================= PREVIEW FRAUD =================
+
+async def preview_fraud_context(user_id: str, lat: float, lon: float):
+    """
+    Lightweight preview for fraud scoring (used by fraud_score router)
+    """
+
+    user = get_user(user_id) or {}
+
+    locs = list(user.get("locations", []))
+
+    gk = grid_key(lat, lon)
+    tb = time_bucket_now()
+
+    fraud_combined, rule_score, ml_anom, ml_prob, _ = combined_fraud_scores(
+        user_id,
+        weather_mismatch=0.0,
+        locations=locs,
+        grid_key=gk,
+        time_bucket=tb,
+        policy_plan=_policy_plan_for_user(user_id),
+    )
+
+    return {
+        "fraud_score": fraud_combined,
+        "rule_score": rule_score,
+        "ml_anomaly": ml_anom,
+        "probability": ml_prob,
+    }
