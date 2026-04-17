@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     tomorrow_api_key: str = ""
     news_api_key: str = ""
     google_maps_api_key: str = ""
+    tomtom_api_key: str = "" 
     disruption_threshold: float = 60.0
 
     @property
