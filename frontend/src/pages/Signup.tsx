@@ -2,149 +2,139 @@ import {
   Alert,
   Box,
   Button,
-  MenuItem,
   Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { getUserProfile, putUserProfile } from "../api/client";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getFirebaseAuth } from "../firebase";
 import { useUserId } from "../hooks/useUserId";
 
+const API_BASE = "https://gigvault-backend.onrender.com";
+
 export default function Signup() {
-  const [userId] = useUserId();
-
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-  const [city, setCity] = useState("");
-  const [workingStatus, setWorkingStatus] = useState("Offline");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const [lat, setLat] = useState<number | null>(null);
-  const [lon, setLon] = useState<number | null>(null);
+  const nav = useNavigate();
+  const [, setUserId] = useUserId();
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setErr(null);
 
-  // ✅ LOAD PROFILE
-  useEffect(() => {
-    if (!userId) return;
+    if (password !== confirm) {
+      setErr("Passwords do not match");
+      return;
+    }
 
-    const loadProfile = async () => {
-      try {
-        const data = await getUserProfile(userId);
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setErr("Firebase not configured");
+      return;
+    }
 
-        setName(data.name || "");
-        setEmail(data.email || "");
-        setCompany(data.company || "");
-        setCity(data.location?.city || "");
-        setWorkingStatus(data.is_online ? "Online" : "Offline");
-
-        setLat(data.location?.lat ?? null);
-        setLon(data.location?.lon ?? null);
-      } catch (err) {
-        console.error(err);
-        setMsg("❌ Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProfile();
-  }, [userId]);
-
-  // ✅ SAVE PROFILE
-  const handleSave = async () => {
-    if (!userId) return;
-
-    setSaving(true);
-    setMsg(null);
+    setLoading(true);
 
     try {
-      await putUserProfile({
-        user_id: userId,
-        name,
-        email,
-        company,
-        is_online: workingStatus === "Online",
-        location: {
-          lat,
-          lon,
-          city,
+      // ✅ 1. CREATE FIREBASE USER
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+      const uid = credential.user.uid;
+
+      // ✅ 2. SET DISPLAY NAME (Firebase)
+      if (name.trim()) {
+        await updateProfile(credential.user, {
+          displayName: name.trim(),
+        });
+      }
+
+      // ✅ 3. SAVE USER ID LOCALLY
+      setUserId(uid);
+
+      // ✅ 4. SAVE PROFILE TO BACKEND (🔥 IMPORTANT)
+      await fetch(`${API_BASE}/user-profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          user_id: uid,
+          name: name.trim(),
+          email: email.trim(),
+          company: "",
+          is_online: false,
+          location: {
+            city: "",
+            lat: null,
+            lon: null,
+          },
+        }),
       });
 
-      setMsg("✅ Profile saved successfully");
-    } catch (err) {
-      console.error(err);
-      setMsg("❌ Failed to save profile");
+      // ✅ 5. GO TO DASHBOARD (NOT PROFILE)
+      nav("/dashboard");
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "Signup failed");
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ p: 4 }}>
-        <Typography>Loading profile...</Typography>
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ display: "grid", placeItems: "center", py: 4 }}>
-      <Paper sx={{ p: 3, width: "100%", maxWidth: 500 }}>
+    <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+      <Paper sx={{ p: 3, width: 400 }} component="form" onSubmit={onSubmit}>
         <Stack spacing={2}>
-          <Typography variant="h5" fontWeight={700}>
-            Profile
-          </Typography>
+          <Typography variant="h5">Sign up</Typography>
 
-          {msg && <Alert severity="info">{msg}</Alert>}
-
-          <TextField label="User ID" value={userId || ""} disabled />
+          {err && <Alert severity="error">{err}</Alert>}
 
           <TextField
-            label="Name"
+            label="Full name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           />
 
           <TextField
             label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
 
           <TextField
-            label="Company you work for"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
 
           <TextField
-            select
-            label="Working status"
-            value={workingStatus}
-            onChange={(e) => setWorkingStatus(e.target.value)}
-          >
-            <MenuItem value="Online">Online</MenuItem>
-            <MenuItem value="Offline">Offline</MenuItem>
-          </TextField>
-
-          <TextField
-            label="City"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+            label="Confirm password"
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
           />
 
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Save profile"}
+          <Button type="submit" variant="contained" disabled={loading}>
+            {loading ? "Creating..." : "Sign up"}
           </Button>
         </Stack>
       </Paper>
