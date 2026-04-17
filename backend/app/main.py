@@ -21,7 +21,7 @@ settings = get_settings()
 print("🔥 ACTIVE CORS:", settings.cors_origin_list)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 🔥 FORCE ALLOW EVERYTHING
+    allow_origins=["https://gig-vault.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
