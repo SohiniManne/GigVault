@@ -21,7 +21,7 @@ async def evaluate_disruption(
     aqi = await get_aqi_signal(lat, lon)
     traffic = await get_traffic_signal(lat, lon)
     news = await get_news_disruption_signal(city)
-    platform = await get_platform_signal(city)
+    platform = get_platform_signal(city=city)
 
     # 🧠 Score calculation
     disruption_score = 0
