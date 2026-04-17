@@ -1,51 +1,40 @@
-from __future__ import annotations
-
-from typing import Any, Dict, Optional
-
 import httpx
-
+import random
 from app.config import get_settings
 
+settings = get_settings()
 
-async def get_traffic_signal(
-    *,
-    origin_lat: Optional[float],
-    origin_lon: Optional[float],
-    city: Optional[str],
-) -> Dict[str, Any]:
-    settings = get_settings()
-    # Fallback mock if key/coords are unavailable
-    if not settings.google_maps_api_key.strip() or origin_lat is None or origin_lon is None:
-        return {"congestion_level": "medium", "delay_multiplier": 1.35, "source": "google_mock"}
-
-    destination = city or f"{origin_lat},{origin_lon}"
-    params = {
-        "origins": f"{origin_lat},{origin_lon}",
-        "destinations": destination,
-        "departure_time": "now",
-        "key": settings.google_maps_api_key.strip(),
-    }
+async def get_traffic_signal(lat: float, lon: float):
     try:
-        async with httpx.AsyncClient(timeout=12.0) as client:
-            resp = await client.get(
-                "https://maps.googleapis.com/maps/api/distancematrix/json",
-                params=params,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        rows = data.get("rows") or []
-        elements = (rows[0] or {}).get("elements") if rows else []
-        e0 = (elements[0] or {}) if elements else {}
-        duration = ((e0.get("duration") or {}).get("value")) or 0
-        in_traffic = ((e0.get("duration_in_traffic") or {}).get("value")) or duration
-        delay_multiplier = (float(in_traffic) / float(duration)) if duration else 1.0
-    except Exception:
-        delay_multiplier = 1.35
+        url = f"https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key={settings.tomtom_api_key}&point={lat},{lon}"
 
-    if delay_multiplier >= 1.8:
-        level = "high"
-    elif delay_multiplier >= 1.25:
-        level = "medium"
-    else:
-        level = "low"
-    return {"congestion_level": level, "delay_multiplier": round(delay_multiplier, 2), "source": "google_maps"}
+        async with httpx.AsyncClient() as client:
+            res = await client.get(url)
+            data = res.json()
+
+        flow = data["flowSegmentData"]
+        current = flow["currentSpeed"]
+        free = flow["freeFlowSpeed"]
+
+        ratio = current / free if free else 1
+
+        if ratio > 0.8:
+            level = "low"
+        elif ratio > 0.5:
+            level = "medium"
+        else:
+            level = "high"
+
+        return {
+            "congestion_level": level,
+            "delay_multiplier": round(1 + (1 - ratio), 2),
+            "source": "tomtom"
+        }
+
+    except Exception as e:
+        print("Traffic API failed:", e)
+        return {
+            "congestion_level": "medium",
+            "delay_multiplier": round(random.uniform(1.2, 1.8), 2),
+            "source": "fallback"
+        }
