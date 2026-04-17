@@ -11,8 +11,8 @@ import { Claims } from "./pages/Claims";
 import { FraudInsights } from "./pages/FraudInsights";
 import { Login } from "./pages/Login";
 import { Premium } from "./pages/Premium";
-import { Profile } from "./pages/Profile";
-import { Signup } from "./pages/Signup";
+import Profile from "./pages/Profile";
+import Signup from "./pages/Signup";
 
 import { useAuthState } from "./hooks/useAuthState";
 
