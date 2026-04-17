@@ -19,7 +19,7 @@ import { getFirebaseAuth } from "../firebase";
 import { useGeoLocation } from "../hooks/useGeoLocation";
 import { useUserId } from "../hooks/useUserId";
 
-export function Profile() {
+export default function Profile() {
   const [userId] = useUserId();
 
   const [name, setName] = useState("");
