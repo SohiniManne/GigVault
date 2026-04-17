@@ -1,9 +1,18 @@
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getFirebaseAuth } from "../firebase";
 import { useUserId } from "../hooks/useUserId";
+import { putUserProfile } from "../api/client"; // ✅ IMPORTANT
 
 export function Signup() {
   const [email, setEmail] = useState("");
@@ -12,65 +21,65 @@ export function Signup() {
   const [confirm, setConfirm] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
   const nav = useNavigate();
   const [, setUserId] = useUserId();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErr(null);
+
     if (password !== confirm) {
       setErr("Passwords do not match");
       return;
     }
+
     const auth = getFirebaseAuth();
     if (!auth) {
-      setErr("Firebase Auth is not configured. Check `frontend/.env` and restart Vite.");
+      setErr("Firebase Auth is not configured.");
       return;
     }
+
     setLoading(true);
-   try {
-  const credential = await createUserWithEmailAndPassword(
-    auth,
-    email.trim(),
-    password
-  );
 
-  const user = credential.user;
+    try {
+      // 🔥 STEP 1: Create Firebase user
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
 
-  // ✅ Update Firebase display name
-  if (name.trim()) {
-    await updateProfile(user, { displayName: name.trim() });
-  }
+      const user = credential.user;
 
-  // 🔥🔥 CRITICAL: SAVE USER TO BACKEND
-  await fetch("https://gigvault-backend.onrender.com/user-profile", {
-    method: "PUT", // matches your backend
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user_id: user.uid,
-      name: name.trim(),
-      email: email.trim(),
-      company: "",
-      is_online: false,
-      location: {
-        lat: null,
-        lon: null,
-        city: "",
-      },
-    }),
-  });
+      // 🔥 STEP 2: Update Firebase display name
+      if (name.trim()) {
+        await updateProfile(user, { displayName: name.trim() });
+      }
 
-  // ✅ Store user locally
-  setUserId(user.uid);
+      // 🔥 STEP 3: SAVE USER TO BACKEND (CRITICAL FIX)
+      await putUserProfile({
+        user_id: user.uid,
+        name: name.trim(),
+        email: email.trim(),
+        company: "",
+        is_online: false,
+        location: {
+          lat: null,
+          lon: null,
+          city: "",
+        },
+      });
 
-  // ✅ Redirect
-  nav("/profile");
+      // 🔥 STEP 4: Store locally
+      setUserId(user.uid);
 
-} catch (error) {
-  setErr(error instanceof Error ? error.message : "Signup failed");
-} finally {
+      // 🔥 STEP 5: Redirect
+      nav("/profile");
+
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "Signup failed");
+    } finally {
       setLoading(false);
     }
   };
@@ -90,13 +99,16 @@ export function Signup() {
           <Typography variant="h5" fontWeight={700}>
             Sign up
           </Typography>
+
           {err && <Alert severity="error">{err}</Alert>}
+
           <TextField
             label="Full name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+
           <TextField
             label="Email"
             type="email"
@@ -104,6 +116,7 @@ export function Signup() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+
           <TextField
             label="Password"
             type="password"
@@ -111,6 +124,7 @@ export function Signup() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
           <TextField
             label="Confirm password"
             type="password"
@@ -118,9 +132,11 @@ export function Signup() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
           />
+
           <Button type="submit" variant="contained" disabled={loading}>
             {loading ? "Creating account..." : "Sign up"}
           </Button>
+
           <Typography variant="body2">
             Already have an account? <Link to="/login">Login</Link>
           </Typography>
