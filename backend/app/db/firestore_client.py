@@ -2,6 +2,7 @@ import os
 import json
 from google.cloud import firestore
 from google.oauth2 import service_account
+from datetime import datetime
 
 # 🔥 Create Firestore client once
 def get_db():
@@ -65,6 +66,7 @@ def record_claim_event(user_id: str, lat, lon, **kwargs):
         "user_id": user_id,
         "lat": lat,
         "lon": lon,
+        "timestamp": datetime.utcnow().isoformat(),
         **kwargs
     })
 # ================= FRAUD SUPPORT =================
