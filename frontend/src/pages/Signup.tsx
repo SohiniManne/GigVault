@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { getUserProfile, putUserProfile } from "../api/client";
 import { useUserId } from "../hooks/useUserId";
 
-export function Profile() {
+export default function Signup() {
   const [userId] = useUserId();
 
   const [name, setName] = useState("");
